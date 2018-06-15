@@ -138,12 +138,12 @@ class CognitoAddCustomAttributesPlugin {
       };
 
       return this.provider.request('CognitoIdentityServiceProvider', 'addCustomAttributes', addCustomAttributesParams)
-        .then(() => this.log('Successfully added attributes'))
+        .then(() => 'Successfully added attributes')
         .catch(error => {
           throw new CustomError(error, 'Error occurred when adding attributes');
         });
     } else {
-      this.log('Supplied attributes already exist.');
+      return 'Supplied attributes already exist';
     }
   }
 

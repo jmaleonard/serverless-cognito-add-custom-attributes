@@ -3,7 +3,7 @@ const _ = require('lodash');
 const Name = 'CognitoAddCustomAttributesPlugin';
 
 const Params = {
-  CognitoUserPoolOutputKey: 'CognitoUserPoolOutputKey',
+  CognitoUserPoolIdOutputKey: 'CognitoUserPoolIdOutputKey',
   CustomAttributes: 'CustomAttributes',
 };
 
@@ -41,7 +41,7 @@ class CognitoAddCustomAttributesPlugin {
     return new Promise((resolve, reject) => {
       this.pluginCustom = this.loadCustom(this.serverless.service.custom);
 
-      if (_.has(this.pluginCustom, Params.CognitoUserPoolOutputKey) && _.has(this.pluginCustom, Params.CustomAttributes)) {
+      if (_.has(this.pluginCustom, Params.CognitoUserPoolIdOutputKey) && _.has(this.pluginCustom, Params.CustomAttributes)) {
         return this.run().then(() => resolve());
       } else {
         this.log('Missing required fields.');
@@ -54,15 +54,15 @@ class CognitoAddCustomAttributesPlugin {
     let pluginCustom = {};
     if (custom && custom.addCustomCognitoAttributes) {
 
-      const CognitoUserPoolOutputKey = _.get(custom.addCustomCognitoAttributes, Params.CognitoUserPoolOutputKey);
+      const CognitoUserPoolIdOutputKey = _.get(custom.addCustomCognitoAttributes, Params.CognitoUserPoolIdOutputKey);
       const CustomAttributes = _.get(custom.addCustomCognitoAttributes, Params.CustomAttributes);
 
-      if (!CognitoUserPoolOutputKey || !(typeof(CognitoUserPoolOutputKey) === 'string')) {
-        this.log('CognitoUserPoolOutputKey is required.');
+      if (!CognitoUserPoolIdOutputKey || !(typeof(CognitoUserPoolIdOutputKey) === 'string')) {
+        this.log('CognitoUserPoolIdOutputKey is required.');
       } else if (!CustomAttributes || !Array.isArray(CustomAttributes)) {
         this.log('CustomAttributes array is required.');
       } else {
-        pluginCustom.CognitoUserPoolOutputKey = CognitoUserPoolOutputKey;
+        pluginCustom.CognitoUserPoolIdOutputKey = CognitoUserPoolIdOutputKey;
         pluginCustom.CustomAttributes = CustomAttributes;
       }
     }
@@ -99,12 +99,12 @@ class CognitoAddCustomAttributesPlugin {
 
   findCognitoUserPool(stack) {
     if (stack) {
-      const userPoolOutput = _.find(stack.Outputs, output => output.OutputKey === this.pluginCustom[Params.CognitoUserPoolOutputKey]);
+      const userPoolOutput = _.find(stack.Outputs, output => output.OutputKey === this.pluginCustom[Params.CognitoUserPoolIdOutputKey]);
       if (userPoolOutput) {
         this.userPoolId = _.get(userPoolOutput, 'OutputValue');
         return this.userPoolId;
       } else {
-        throw new Error(`Could not find ${Params.CognitoUserPoolOutputKey} in Outputs for stack.`);
+        throw new Error(`Could not find ${Params.CognitoUserPoolIdOutputKey} in Outputs for stack.`);
       }
     }
   }

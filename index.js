@@ -110,6 +110,8 @@ class CognitoAddCustomAttributesPlugin {
   }
 
   describeCognitoUserPool(userPoolId) {
+    this.log(`Found userPoolId: ${userPoolId}`);
+
     const describeParams = {
       UserPoolId: userPoolId
     };
@@ -122,11 +124,15 @@ class CognitoAddCustomAttributesPlugin {
   }
 
   intersectExistingAttributes(userPool) {
-    const existingAttributeNames = _.map(userPool.SchemaAttributes, attributes => attributes.Name);
-
     return _.filter(this.pluginCustom.CustomAttributes, newAttribute => {
-      const customName = _.replace(newAttribute.Name, /^custom\:/, 'custom:');
-      return _.some(existingAttributeNames, existingName => existingName == customName);
+
+      let customName = newAttribute.Name;
+      if (!_.startsWith(customName, 'custom:')) {
+        customName = `custom:${customName}`;
+      }
+
+      const exists = _.some(userPool.SchemaAttributes, existingAttribute => existingAttribute.Name == customName);
+      return !exists;
     });
   }
 
@@ -136,6 +142,8 @@ class CognitoAddCustomAttributesPlugin {
         UserPoolId: this.userPoolId,
         CustomAttributes: newAttributes
       };
+
+      this.log(`Adding ${newAttributes.length} attribute(s): ${_.join(_.map(newAttributes, x => x.Name))}`)
 
       return this.provider.request('CognitoIdentityServiceProvider', 'addCustomAttributes', addCustomAttributesParams)
         .then(() => 'Successfully added attributes')

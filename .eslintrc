@@ -2,11 +2,10 @@
   "env": {
     "browser": true,
     "commonjs": true,
-    "es6": true,
-    "node": true
+    "es6": true
   },
   "parserOptions": {
-    "ecmaVersion": 2016,
+    "ecmaVersion": 2017,
     "sourceType": "module"
   },
   "rules": {
@@ -22,7 +21,9 @@
     "no-this-before-super": "warn",
     "no-unreachable": "warn",
     "constructor-super": "warn",
-    "valid-typeof": "warn"
+    "valid-typeof": "warn",
+    "space-before-blocks": "warn",
+    "spaced-comment": "warn"
   },
   "globals": {
     "describe": true,

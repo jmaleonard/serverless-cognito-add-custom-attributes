@@ -86,13 +86,18 @@ const describeCognitoUserPoolClient = async (AWS, userPoolId, userPoolClientId) 
   }
 };
 
+const transformAttributeName = (name) => {
+  let customName = name;
+  if (!_.startsWith(customName, 'custom:')) {
+    customName = `custom:${customName}`;
+  }
+  return customName;
+};
+
 const getMissingAttributes = (newAttributes, existingAttributeNames) => {
   return _.filter(newAttributes, newAttribute => {
 
-    let customName = newAttribute.Name;
-    if (!_.startsWith(customName, 'custom:')) {
-      customName = `custom:${customName}`;
-    }
+    let customName = transformAttributeName(newAttribute.Name);
 
     const exists = _.some(existingAttributeNames, existingName => existingName == customName);
     return !exists;
@@ -123,32 +128,23 @@ const addNewCustomAttributesToUserPool = async (AWS, log, userPoolId, newAttribu
 const updateUserPoolClient = async (AWS, log, userPoolClient, readAttributes, writeAttributes) => {
   if (readAttributes.length + writeAttributes.length > 0) {
 
-    readAttributes = _.map(readAttributes, x => {
-      let customName = x.Name;
-      if (!_.startsWith(customName, 'custom:')) {
-        customName = `custom:${customName}`;
-      }
-      return customName;
-    });
-    
-    writeAttributes = _.map(writeAttributes, x => {
-      let customName = x.Name;
-      if (!_.startsWith(customName, 'custom:')) {
-        customName = `custom:${customName}`;
-      }
-      return customName;
-    });
+    const readAttributeNames = _.map(readAttributes, x => transformAttributeName(x.Name));
+    const writeAttributeNames = _.map(writeAttributes, x => transformAttributeName(x.Name));
 
     try{
       let params = {
         ClientId: userPoolClient.ClientId,
         UserPoolId: userPoolClient.UserPoolId,
-        ReadAttributes: _.concat(userPoolClient.ReadAttributes, readAttributes),
-        WriteAttributes: _.concat(userPoolClient.WriteAttributes, writeAttributes),
+        ReadAttributes: _.concat(userPoolClient.ReadAttributes, readAttributeNames),
+        WriteAttributes: _.concat(userPoolClient.WriteAttributes, writeAttributeNames),
       };
   
-      log(`Enabling client to read from ${readAttributes.length} new attribute(s): ${_.join(readAttributes)}`);
-      log(`Enabling client to write to ${writeAttributes.length} new attribute(s): ${_.join(writeAttributes)}`);
+      if (readAttributeNames.length > 0 ) {
+        log(`Enabling client to read from ${readAttributeNames.length} new attribute(s): ${_.join(readAttributeNames)}`);
+      }
+      if (writeAttributeNames.length > 0) {
+        log(`Enabling client to write to ${writeAttributeNames.length} new attribute(s): ${_.join(writeAttributeNames)}`);
+      }
 
       await AWS.request('CognitoIdentityServiceProvider', 'updateUserPoolClient', params);
       log('Successfully updated client');

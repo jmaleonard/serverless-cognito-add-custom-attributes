@@ -191,7 +191,6 @@ class CognitoAddCustomAttributesPlugin {
     const { provider: AWS, custom, log } = this;
 
     try{
-
       const stack = await describeStack(AWS);
       const userPoolId = findOutputId(custom, stack, Params.CognitoUserPoolIdOutputKey);
       log(`Found userPoolId: ${userPoolId}`);

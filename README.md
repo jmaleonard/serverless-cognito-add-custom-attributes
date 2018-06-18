@@ -12,7 +12,7 @@ This plugin also adds the specified attributes to a User Pool Client, giving tha
 
 ```yml
 plugins:
-    - custom-serverless-plugin
+    - serverless-cognito-add-custom-attributes
 
 custom:
   CognitoAddCustomAttributes: 

@@ -191,6 +191,8 @@ class CognitoAddCustomAttributesPlugin {
     const { provider: AWS, custom, log } = this;
 
     try{
+      log('Start');
+
       const stack = await describeStack(AWS);
       const userPoolId = findOutputId(custom, stack, Params.CognitoUserPoolIdOutputKey);
       log(`Found userPoolId: ${userPoolId}`);
@@ -207,7 +209,7 @@ class CognitoAddCustomAttributesPlugin {
       const newWriteAttributes = getMissingAttributes(custom.CustomAttributes, userPoolClient.WriteAttributes);
       await updateUserPoolClient(AWS, log, userPoolClient, newReadAttributes, newWriteAttributes);
 
-      log('Done');
+      log('End');
     } catch(error) {
       if (error.innerMessage) log(`${error.innerMessage}. ${error}`);
     }

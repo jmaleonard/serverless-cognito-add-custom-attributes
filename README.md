@@ -10,6 +10,8 @@ This plugin also adds the specified attributes to a User Pool Client, giving tha
 
 # Usage
 
+Install `npm i serverless-cognito-add-custom-attributes`, then add `serverless-cognito-add-custom-attributes` to your serverless.yml `plugins` list.
+
 ```yml
 plugins:
     - serverless-cognito-add-custom-attributes

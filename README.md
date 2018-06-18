@@ -1,3 +1,5 @@
+[![npm version](https://badge.fury.io/js/serverless-cognito-add-custom-attributes.svg)](https://badge.fury.io/js/serverless-cognito-add-custom-attributes)
+
 # serverless-cognito-add-custom-attributes
 
 This plugin allows you to add custom attributes to an existing CloudFormation-managed Cognito User Pool from serverless without losing all your users. At the time of writing (June 2018) CloudFormation doesn't know how to add custom attributes to a user pool without dropping and re-creating it, thus losing all your users.

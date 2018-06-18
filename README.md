@@ -2,6 +2,8 @@
 
 This plugin allows you to add custom attributes to an existing CloudFormation-managed Cognito User Pool from serverless without losing all your users. At the time of writing (June 2018) CloudFormation doesn't know how to add custom attributes to a user pool without dropping and re-creating it, thus losing all your users.
 
+This plugin also adds the specified attributes to a User Pool Client, giving that client read and write permissions for the new attribute.
+
 # Requirements
 - Node 8+
 - serverless 1+
@@ -15,6 +17,7 @@ plugins:
 custom:
   CognitoAddCustomAttributes: 
     CognitoUserPoolIdOutputKey: "CognitoUserPoolApplicationUserPoolId" 
+    CognitoUserPoolClientIdOutputKey: "CognitoUserPoolApplicationUserPoolClientId" 
     CustomAttributes: 
       - 
         AttributeDataType: String
@@ -24,21 +27,23 @@ custom:
         Required: False
 
 resources:
-  Resources:
-    # The definition of your user pool (in this example it is in a separate file)
-    CognitoUserPoolApplicationUserPool: ${file(./CognitoUserPool.yml):UserPool}
   Outputs:
     CognitoUserPoolApplicationUserPoolId:
       Value:
         Ref: CognitoUserPoolApplicationUserPool
+    CognitoUserPoolApplicationUserPoolClientId:
+      Value:
+        Ref: CognitoUserPoolApplicationUserPoolClient
 ```
 
 # Details
 
 1. Output your UserPoolId via `resouces.Outputs`
+1. Output your UserPoolClientId via `resouces.Outputs`
 2. Add `CognitoAddCustomAttributes` to `custom` with the following structure:
 ```yml
-  CognitoUserPoolIdOutputKey: "Output Key as a String"
+  CognitoUserPoolIdOutputKey: "UserPool Output Key as a String"
+  CognitoUserPoolClientIdOutputKey: "UserPoolClient Output Key as a String"
   CustomAttributes:
     - 
         AttributeDataType: String

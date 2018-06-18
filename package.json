@@ -1,6 +1,6 @@
 {
   "name": "serverless-cognito-add-custom-attributes",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Add custom attributes to an existing CloudFormation-managed CognitoUserPool and CognitoUserPoolClient without losing all your users.",
   "main": "index.js",
   "scripts": {

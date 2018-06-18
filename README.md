@@ -2,6 +2,10 @@
 
 This plugin allows you to add custom attributes to an existing CloudFormation-managed Cognito User Pool from serverless without losing all your users. At the time of writing (June 2018) CloudFormation doesn't know how to add custom attributes to a user pool without dropping and re-creating it, thus losing all your users.
 
+# Requirements
+- Node 8+
+- serverless 1+
+
 # Usage
 
 ```yml

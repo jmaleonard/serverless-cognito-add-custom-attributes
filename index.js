@@ -8,13 +8,13 @@ const Params = {
   CognitoUserPoolClientIdOutputKey: 'CognitoUserPoolClientIdOutputKey',
 };
 
-class CustomError extends Error {
+class CognitoAddCustomAttributesPluginError extends Error {
   constructor(error, innerMessage) {
     super(error.message);
-    this.name = 'CustomError';
+    this.name = 'CognitoAddCustomAttributesPluginError';
     
     this.innerMessage = innerMessage;
-    Error.captureStackTrace(error, CustomError);
+    Error.captureStackTrace(error, CognitoAddCustomAttributesPluginError);
   }
 }
 
@@ -65,7 +65,7 @@ const describeCognitoUserPool = function (AWS, userPoolId) {
   return AWS.request('CognitoIdentityServiceProvider', 'describeUserPool', describeParams)
     .then(response => response.UserPool)
     .catch(error => {
-      throw new CustomError(error, 'Error occurred when fetching UserPool');
+      throw new CognitoAddCustomAttributesPluginError(error, 'Error occurred when fetching UserPool');
     });   
 };
 
@@ -78,7 +78,7 @@ const describeCognitoUserPoolClient = function (AWS, userPoolId, userPoolClientI
   return AWS.request('CognitoIdentityServiceProvider', 'describeUserPoolClient', describeParams)
     .then(response => response.UserPoolClient)
     .catch(error => {
-      throw new CustomError(error, 'Error occurred when fetching UserPoolClient');
+      throw new CognitoAddCustomAttributesPluginError(error, 'Error occurred when fetching UserPoolClient');
     });   
 };
 
@@ -107,7 +107,7 @@ const addNewCustomAttributesToUserPool = function(AWS, log, userPoolId, newAttri
     return AWS.request('CognitoIdentityServiceProvider', 'addCustomAttributes', addCustomAttributesParams)
       .then(() => 'Successfully added attributes to pool')
       .catch(error => {
-        throw new CustomError(error, 'Error occurred when adding attributes to pool');
+        throw new CognitoAddCustomAttributesPluginError(error, 'Error occurred when adding attributes to pool');
       });
   } else {
     return 'Supplied attributes already exist in pool';
@@ -146,7 +146,7 @@ const updateUserPoolClient = function(AWS, log, userPoolClient, readAttributes, 
     return AWS.request('CognitoIdentityServiceProvider', 'updateUserPoolClient', params)
       .then(() => 'Successfully updated client')
       .catch(error => {
-        throw new CustomError(error, 'Error occurred when updating client');
+        throw new CognitoAddCustomAttributesPluginError(error, 'Error occurred when updating client');
       });
   } else {
     return 'No update required to UserPoolClient';

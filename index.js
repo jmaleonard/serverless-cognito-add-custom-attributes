@@ -20,11 +20,11 @@ class CognitoAddCustomAttributesPluginError extends Error {
 
 const loadCustom = (log, custom) => {
   let result = {};
-  if (custom && custom.addCustomCognitoAttributes) {
+  if (custom && custom.CognitoAddCustomAttributes) {
 
-    const CognitoUserPoolIdOutputKey = _.get(custom.addCustomCognitoAttributes, Params.CognitoUserPoolIdOutputKey);
-    const CustomAttributes = _.get(custom.addCustomCognitoAttributes, Params.CustomAttributes);
-    const CognitoUserPoolClientIdOutputKey = _.get(custom.addCustomCognitoAttributes, Params.CognitoUserPoolClientIdOutputKey);
+    const CognitoUserPoolIdOutputKey = _.get(custom.CognitoAddCustomAttributes, Params.CognitoUserPoolIdOutputKey);
+    const CustomAttributes = _.get(custom.CognitoAddCustomAttributes, Params.CustomAttributes);
+    const CognitoUserPoolClientIdOutputKey = _.get(custom.CognitoAddCustomAttributes, Params.CognitoUserPoolClientIdOutputKey);
 
     if (!CognitoUserPoolIdOutputKey || !(typeof(CognitoUserPoolIdOutputKey) === 'string')) {
       log('CognitoUserPoolIdOutputKey is required.');

@@ -11,6 +11,14 @@
     "type": "git",
     "url": "git+https://github.com/GetWala/serverless-cognito-add-custom-attributes.git"
   },
+  "files": [
+    ".eslintrc",
+    "./helperMethods.js",
+    "./index.js",
+    "LICENSE",
+    "package.json",
+    "README.md"
+  ],
   "keywords": [
     "serverless",
     "cognito"

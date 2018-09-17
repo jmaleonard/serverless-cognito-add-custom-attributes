@@ -19,15 +19,15 @@ plugins:
     - serverless-cognito-add-custom-attributes
 
 custom:
-  CognitoAddCustomAttributes: 
-    CognitoUserPoolIdOutputKey: "CognitoUserPoolApplicationUserPoolId" 
-    CognitoUserPoolClientIdOutputKey: "CognitoUserPoolApplicationUserPoolClientId" 
-    CustomAttributes: 
-      - 
+  CognitoAddCustomAttributes:
+    CognitoUserPoolIdOutputKey: "CognitoUserPoolApplicationUserPoolId"
+    CognitoUserPoolClientIdOutputKey: "CognitoUserPoolApplicationUserPoolClientId"
+    CustomAttributes:
+      -
         AttributeDataType: String
         DeveloperOnlyAttribute: False
         Mutable: True
-        Name: "another" # this will end up being custom:another 
+        Name: "another" # this will end up being custom:another
         Required: False
 
 resources:
@@ -42,20 +42,65 @@ resources:
 
 # Details
 
-1. Output your UserPoolId via `resouces.Outputs`
-1. Output your UserPoolClientId via `resouces.Outputs`
-2. Add `CognitoAddCustomAttributes` to `custom` with the following structure:
+1. Output your UserPoolId via `resources.Outputs`
+2. Output your UserPoolClientId via `resources.Outputs`
+3. Add `CognitoAddCustomAttributes` to `custom` with the following structure:
 ```yml
   CognitoUserPoolIdOutputKey: "UserPool Output Key as a String"
   CognitoUserPoolClientIdOutputKey: "UserPoolClient Output Key as a String"
   CustomAttributes:
-    - 
+    -
         AttributeDataType: String
         DeveloperOnlyAttribute: False
         Mutable: True
         Name: "another"
         Required: False
 ```
+
+Note: If you have multiple userPool-userPoolClients you can specify them as an array as well
+
+Example:
+```yml
+plugins:
+    - serverless-cognito-add-custom-attributes
+
+custom:
+  CognitoAddCustomAttributes:
+    -
+      CognitoUserPoolIdOutputKey: "CognitoUserPoolApplicationUserPoolId"
+      CognitoUserPoolClientIdOutputKey: "CognitoUserPoolApplicationUserPoolClientId"
+      CustomAttributes:
+        -
+          AttributeDataType: String
+          DeveloperOnlyAttribute: False
+          Mutable: True
+          Name: "another" # this will end up being custom:another
+          Required: False
+    -
+      CognitoUserPoolIdOutputKey: "CognitoUserPoolApplicationUserPoolId"
+      CognitoUserPoolClientIdOutputKey: "CognitoUserPoolApplicationUserPoolClientId2"
+      CustomAttributes:
+        -
+          AttributeDataType: String
+          DeveloperOnlyAttribute: False
+          Mutable: True
+          Name: "another" # this will end up being custom:another
+          Required: False
+
+resources:
+  Outputs:
+    CognitoUserPoolApplicationUserPoolId:
+      Value:
+        Ref: CognitoUserPoolApplicationUserPool
+    CognitoUserPoolApplicationUserPoolClientId:
+      Value:
+        Ref: CognitoUserPoolApplicationUserPoolClient
+    CognitoUserPoolApplicationUserPoolClientId2:
+      Value:
+        Ref: CognitoUserPoolApplicationUserPoolClient2
+```
+
+
 
 The names of your attributes supplied here will appear as `custom:{name}` when deployed.
 

@@ -1,12 +1,11 @@
 const _ = require('lodash');
+const helperMethods = require('./helperMethods');
 
 const Name = 'CognitoAddCustomAttributesPlugin';
 
-const Params = {
-  CognitoUserPoolIdOutputKey: 'CognitoUserPoolIdOutputKey',
-  CustomAttributes: 'CustomAttributes',
-  CognitoUserPoolClientIdOutputKey: 'CognitoUserPoolClientIdOutputKey',
-};
+const loadCustom = helperMethods.loadCustom;
+const Params = helperMethods.Params;
+const describeStack = helperMethods.describeStack;
 
 class CognitoAddCustomAttributesPluginError extends Error {
   constructor(error, innerMessage) {
@@ -17,33 +16,6 @@ class CognitoAddCustomAttributesPluginError extends Error {
     Error.captureStackTrace(error, CognitoAddCustomAttributesPluginError);
   }
 }
-
-const loadCustom = (log, custom) => {
-  let result = {};
-  if (custom && custom.CognitoAddCustomAttributes) {
-
-    const CognitoUserPoolIdOutputKey = _.get(custom.CognitoAddCustomAttributes, Params.CognitoUserPoolIdOutputKey);
-    const CustomAttributes = _.get(custom.CognitoAddCustomAttributes, Params.CustomAttributes);
-    const CognitoUserPoolClientIdOutputKey = _.get(custom.CognitoAddCustomAttributes, Params.CognitoUserPoolClientIdOutputKey);
-
-    if (!CognitoUserPoolIdOutputKey || !(typeof(CognitoUserPoolIdOutputKey) === 'string')) {
-      log('CognitoUserPoolIdOutputKey is required.');
-    } else if (!CustomAttributes || !Array.isArray(CustomAttributes)) {
-      log('CustomAttributes array is required.');
-    } else {
-      result.CognitoUserPoolIdOutputKey = CognitoUserPoolIdOutputKey;
-      result.CustomAttributes = CustomAttributes;
-      result.CognitoUserPoolClientIdOutputKey = CognitoUserPoolClientIdOutputKey;
-    }
-  }
-
-  return result;
-};
-
-const describeStack = async (AWS) => {
-  const response = await AWS.request('CloudFormation', 'describeStacks', { StackName: AWS.naming.getStackName() });
-  return _.first(response.Stacks);
-};
 
 const findOutputId = (custom, stack, outputKey) => {
   if (stack) {
@@ -190,25 +162,46 @@ class CognitoAddCustomAttributesPlugin {
       log('Start');
 
       const stack = await describeStack(AWS);
-      const userPoolId = findOutputId(custom, stack, Params.CognitoUserPoolIdOutputKey);
-      log(`Found userPoolId: ${userPoolId}`);
-      const userPoolClientId = await findOutputId(custom, stack, Params.CognitoUserPoolClientIdOutputKey);
-      log(`Found userPoolClientId: ${userPoolClientId}`);
-
-      const userPool = await describeCognitoUserPool(AWS, userPoolId);
-      const userPoolClient = await describeCognitoUserPoolClient(AWS, userPoolId, userPoolClientId);
       
-      const newAttributes = getMissingAttributes(custom.CustomAttributes, _.map(userPool.SchemaAttributes, 'Name'));
-      await addNewCustomAttributesToUserPool(AWS, log, userPoolId, newAttributes);
-
-      const newReadAttributes = getMissingAttributes(custom.CustomAttributes, userPoolClient.ReadAttributes);
-      const newWriteAttributes = getMissingAttributes(custom.CustomAttributes, userPoolClient.WriteAttributes);
-      await updateUserPoolClient(AWS, log, userPoolClient, newReadAttributes, newWriteAttributes);
+      const mappingPromises = [];
+      if(Array.isArray(custom)) {
+        custom.forEach((mappingItem) => {
+          //skip empty mapping items
+          if(_.isEmpty(mappingItem)) {
+            return;
+          }
+          
+          mappingPromises.push(this.processCognitoCustomAttributeMapping(stack, mappingItem));
+        });
+      } else {
+        mappingPromises.push(this.processCognitoCustomAttributeMapping(stack, custom));
+      }
+      
+      await Promise.all(mappingPromises);
 
       log('End');
     } catch(error) {
       if (error.innerMessage) log(`${error.innerMessage}. ${error}`);
     }
+  }
+  
+  async processCognitoCustomAttributeMapping(stack, mappingItem) {
+    const { log, provider: AWS } = this;
+    
+    const userPoolId = findOutputId(mappingItem, stack, Params.CognitoUserPoolIdOutputKey);
+    log(`Found userPoolId: ${userPoolId}`);
+    const userPoolClientId = await findOutputId(mappingItem, stack, Params.CognitoUserPoolClientIdOutputKey);
+    log(`Found userPoolClientId: ${userPoolClientId}`);
+  
+    const userPool = await describeCognitoUserPool(AWS, userPoolId);
+    const userPoolClient = await describeCognitoUserPoolClient(AWS, userPoolId, userPoolClientId);
+  
+    const newAttributes = getMissingAttributes(mappingItem.CustomAttributes, _.map(userPool.SchemaAttributes, 'Name'));
+    await addNewCustomAttributesToUserPool(AWS, log, userPoolId, newAttributes);
+  
+    const newReadAttributes = getMissingAttributes(mappingItem.CustomAttributes, userPoolClient.ReadAttributes);
+    const newWriteAttributes = getMissingAttributes(mappingItem.CustomAttributes, userPoolClient.WriteAttributes);
+    await updateUserPoolClient(AWS, log, userPoolClient, newReadAttributes, newWriteAttributes);
   }
 
   log(message) {

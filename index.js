@@ -166,7 +166,7 @@ class CognitoAddCustomAttributesPlugin {
       const mappingPromises = [];
       if(Array.isArray(custom)) {
         custom.forEach((mappingItem) => {
-          //skip empty mapping items
+          // skip empty mapping items
           if(_.isEmpty(mappingItem)) {
             return;
           }

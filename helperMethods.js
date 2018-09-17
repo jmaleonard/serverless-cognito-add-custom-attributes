@@ -48,7 +48,7 @@ const parseCustomItem = (log, item) => {
   }
   
   if(skippingItem) {
-    log(`Custom Attribute is being skipped due to missing information. [CognitoUserPoolIdOutputKey: ${CognitoUserPoolIdOutputKey}] [CognitoUserPoolClientIdOutputKey: ${CognitoUserPoolClientIdOutputKey}]`)
+    log(`Custom Attribute is being skipped due to missing information. [CognitoUserPoolIdOutputKey: ${CognitoUserPoolIdOutputKey}] [CognitoUserPoolClientIdOutputKey: ${CognitoUserPoolClientIdOutputKey}]`);
   }
   
   return result;

@@ -20,8 +20,8 @@ plugins:
 
 custom:
   CognitoAddCustomAttributes: 
-    CognitoUserPoolIdOutputKey: "CognitoUserPoolApplicationUserPoolId" 
-    CognitoUserPoolClientIdOutputKey: "CognitoUserPoolApplicationUserPoolClientId" 
+    CognitoUserPoolIdOutputKey: "CognitoUserPoolApplicationUserPoolId"              # The key of the outputted UserPool Ref 
+    CognitoUserPoolClientIdOutputKey: "CognitoUserPoolApplicationUserPoolClientId"  # The key of the outputted UserPoolClient Ref
     CustomAttributes: 
       - 
         AttributeDataType: String
@@ -30,6 +30,7 @@ custom:
         Name: "another" # this will end up being custom:another 
         Required: False
 
+# Only add this if not already outputting the Cognito User Pool and Client IDs, otherwise, refer to the existing outputs in the custom:CognitoAddCustomAttributes section
 resources:
   Outputs:
     CognitoUserPoolApplicationUserPoolId:

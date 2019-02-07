@@ -25,6 +25,7 @@
   ],
   "author": "Michael Duminy (https://github.com/michaelduminy)",
   "license": "MIT",
+  "maintainers": ["Jared Leonard (https://github.com/jmaleonard)"],
   "bugs": {
     "url": "https://github.com/GetWala/serverless-cognito-add-custom-attributes/issues"
   },

@@ -19,17 +19,18 @@ plugins:
     - serverless-cognito-add-custom-attributes
 
 custom:
-  CognitoAddCustomAttributes:
-    CognitoUserPoolIdOutputKey: "CognitoUserPoolApplicationUserPoolId"
-    CognitoUserPoolClientIdOutputKey: "CognitoUserPoolApplicationUserPoolClientId"
-    CustomAttributes:
-      -
+  CognitoAddCustomAttributes: 
+    CognitoUserPoolIdOutputKey: "CognitoUserPoolApplicationUserPoolId"              # The key of the outputted UserPool Ref 
+    CognitoUserPoolClientIdOutputKey: "CognitoUserPoolApplicationUserPoolClientId"  # The key of the outputted UserPoolClient Ref
+    CustomAttributes: 
+      - 
         AttributeDataType: String
         DeveloperOnlyAttribute: False
         Mutable: True
         Name: "another" # this will end up being custom:another
         Required: False
 
+# Only add this if not already outputting the Cognito User Pool and Client IDs, otherwise, refer to the existing outputs in the custom:CognitoAddCustomAttributes section
 resources:
   Outputs:
     CognitoUserPoolApplicationUserPoolId:

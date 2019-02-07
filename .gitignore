@@ -40,3 +40,6 @@ jspm_packages
 .serverless
 .vscode/*
 !.vscode/extensions.json
+
+# Webstorm IDE
+.idea/

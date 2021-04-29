@@ -149,9 +149,9 @@ const updateUserPoolClient = async (
     );
 
     try {
-      let params = {
-        ClientId: userPoolClient.ClientId,
-        UserPoolId: userPoolClient.UserPoolId,
+      let sanitisedUserPoolClient = _.omit(userPoolClient, ['ClientSecret', 'CreationDate', 'LastModifiedDate']);
+      
+      let params = Object.assign({}, sanitisedUserPoolClient, {
         ReadAttributes: _.concat(
           userPoolClient.ReadAttributes,
           readAttributeNames
@@ -160,7 +160,7 @@ const updateUserPoolClient = async (
           userPoolClient.WriteAttributes,
           writeAttributeNames
         )
-      };
+      })
 
       if (readAttributeNames.length > 0) {
         log(

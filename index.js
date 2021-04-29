@@ -261,19 +261,8 @@ class CognitoAddCustomAttributesPlugin {
       Params.CognitoUserPoolIdOutputKey
     );
     log(`Found userPoolId: ${userPoolId}`);
-    const userPoolClientId = await findOutputId(
-      mappingItem,
-      stack,
-      Params.CognitoUserPoolClientIdOutputKey
-    );
-    log(`Found userPoolClientId: ${userPoolClientId}`);
 
     const userPool = await describeCognitoUserPool(AWS, userPoolId);
-    const userPoolClient = await describeCognitoUserPoolClient(
-      AWS,
-      userPoolId,
-      userPoolClientId
-    );
 
     const newAttributes = getMissingAttributes(
       mappingItem.CustomAttributes,
@@ -281,21 +270,40 @@ class CognitoAddCustomAttributesPlugin {
     );
     await addNewCustomAttributesToUserPool(AWS, log, userPoolId, newAttributes);
 
-    const newReadAttributes = getMissingAttributes(
-      mappingItem.CustomAttributes,
-      userPoolClient.ReadAttributes
-    );
-    const newWriteAttributes = getMissingAttributes(
-      mappingItem.CustomAttributes,
-      userPoolClient.WriteAttributes
-    );
-    await updateUserPoolClient(
-      AWS,
-      log,
-      userPoolClient,
-      newReadAttributes,
-      newWriteAttributes
-    );
+    if ( typeof _.get(mappingItem, Params.CognitoUserPoolClientIdOutputKey) !== 'undefined' ) {
+      const userPoolClientId = await findOutputId(
+        mappingItem,
+        stack,
+        Params.CognitoUserPoolClientIdOutputKey
+      );
+
+      log(`Found userPoolClientId: ${userPoolClientId}`);
+      
+      const userPoolClient = await describeCognitoUserPoolClient(
+        AWS,
+        userPoolId,
+        userPoolClientId
+      );
+
+      const newReadAttributes = getMissingAttributes(
+        mappingItem.CustomAttributes,
+        userPoolClient.ReadAttributes
+      );
+      const newWriteAttributes = getMissingAttributes(
+        mappingItem.CustomAttributes,
+        userPoolClient.WriteAttributes
+      );
+      await updateUserPoolClient(
+        AWS,
+        log,
+        userPoolClient,
+        newReadAttributes,
+        newWriteAttributes
+      );
+    }
+    else {
+      log('No param for UserPoolClient found. Will not update any UserPoolClient permissions!');
+    }
   }
 
   log(message) {

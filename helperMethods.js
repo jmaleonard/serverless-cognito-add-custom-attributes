@@ -6,8 +6,36 @@ const Params = {
   CognitoUserPoolClientIdOutputKey: 'CognitoUserPoolClientIdOutputKey',
 };
 
+const V3_CLIENTS = {
+  CloudFormation: ['@aws-sdk/client-cloudformation', 'CloudFormationClient'],
+  CognitoIdentityServiceProvider: ['@aws-sdk/client-cognito-identity-provider', 'CognitoIdentityProviderClient']
+};
+const v3Clients = new WeakMap();
+
+// osls 4 removed the SDK v2 provider.request() proxy and exposes getAwsSdkV3Config() instead.
+// Serverless Framework 3 and osls 3 only offer provider.request().
+const request = async (provider, service, method, params) => {
+  if (typeof provider.getAwsSdkV3Config !== 'function') {
+    return provider.request(service, method, params);
+  }
+
+  const [packageName, clientName] = V3_CLIENTS[service];
+  const sdk = require(packageName);
+  if (!v3Clients.has(provider)) {
+    v3Clients.set(provider, {});
+  }
+  const clients = v3Clients.get(provider);
+  if (!clients[service]) {
+    clients[service] = provider.getAwsSdkV3Config().then((config) => new sdk[clientName](config));
+  }
+  const client = await clients[service];
+  const Command = sdk[`${method[0].toUpperCase()}${method.slice(1)}Command`];
+
+  return client.send(new Command(params));
+};
+
 const describeStack = async (AWS) => {
-  const response = await AWS.request('CloudFormation', 'describeStacks', { StackName: AWS.naming.getStackName() });
+  const response = await request(AWS, 'CloudFormation', 'describeStacks', { StackName: AWS.naming.getStackName() });
   return _.first(response.Stacks);
 };
 
@@ -56,6 +84,7 @@ const parseCustomItem = (log, item) => {
 
 module.exports = {
   Params,
+  request,
   loadCustom,
   describeStack
 };

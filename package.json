@@ -25,12 +25,16 @@
   ],
   "author": "Michael Duminy (https://github.com/michaelduminy)",
   "license": "MIT",
-  "maintainers": ["Jared Leonard (https://github.com/jmaleonard)"],
+  "maintainers": [
+    "Jared Leonard (https://github.com/jmaleonard)"
+  ],
   "bugs": {
     "url": "https://github.com/michaelduminy/serverless-cognito-add-custom-attributes/issues"
   },
   "homepage": "https://github.com/michaelduminy/serverless-cognito-add-custom-attributes#readme",
   "dependencies": {
+    "@aws-sdk/client-cloudformation": "^3.1137.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.1137.0",
     "lodash": "^4.17.10"
   },
   "devDependencies": {

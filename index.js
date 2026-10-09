@@ -164,7 +164,7 @@ const updateUserPoolClient = async (
           userPoolClient.WriteAttributes,
           writeAttributeNames
         )
-      })
+      });
 
       if (readAttributeNames.length > 0) {
         log(

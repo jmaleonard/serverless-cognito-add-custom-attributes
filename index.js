@@ -6,6 +6,7 @@ const Name = 'CognitoAddCustomAttributesPlugin';
 const loadCustom = helperMethods.loadCustom;
 const Params = helperMethods.Params;
 const describeStack = helperMethods.describeStack;
+const request = helperMethods.request;
 
 class CognitoAddCustomAttributesPluginError extends Error {
   constructor(error, innerMessage) {
@@ -38,7 +39,8 @@ const describeCognitoUserPool = async (AWS, userPoolId) => {
       UserPoolId: userPoolId
     };
 
-    const response = await AWS.request(
+    const response = await request(
+      AWS,
       'CognitoIdentityServiceProvider',
       'describeUserPool',
       describeParams
@@ -63,7 +65,8 @@ const describeCognitoUserPoolClient = async (
       UserPoolId: userPoolId
     };
 
-    const response = await AWS.request(
+    const response = await request(
+      AWS,
       'CognitoIdentityServiceProvider',
       'describeUserPoolClient',
       describeParams
@@ -116,7 +119,8 @@ const addNewCustomAttributesToUserPool = async (
         )}`
       );
 
-      await AWS.request(
+      await request(
+        AWS,
         'CognitoIdentityServiceProvider',
         'addCustomAttributes',
         addCustomAttributesParams
@@ -177,7 +181,8 @@ const updateUserPoolClient = async (
         );
       }
 
-      await AWS.request(
+      await request(
+        AWS,
         'CognitoIdentityServiceProvider',
         'updateUserPoolClient',
         params
